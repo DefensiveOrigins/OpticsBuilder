@@ -122,43 +122,13 @@ cd C:\LABS\LabPack\LABPACK-master\Lab-WEF-Palantir\wef-subscriptions
 foreach ($file in (Get-ChildItem *.xml)) {wecutil cs $file}
 
 
+
 # increase the size of all custom channels
 
 foreach ($subscription in (wevtutil el | select-string -pattern "WEC")) {wevtutil sl $subscription /ms:4194304}
 wevtutil gl WEC3-PRINT
 
 
-#####################################
-# REMOTE POWERSHELL SESSION TO WS01 #
-#####################################
-
-# Fire up a powershell-remoting session to the WS
-
-Enter-PSSession ws01
-
-
-
-# CD to labs\sysmon file share and install sysmon
-
-cd \\dc01\labs\sysmon\
-./sysmon.exe -accepteula -i sysmonconfig.xml
-
-Get-WinEvent -LogName Microsoft-Windows-Sysmon/Operational
-
-
-
-# Update policies and reboot remote system
-# Remote PS session will disconnect, and remote desktop will disconnect, DC will finish up local configuration and boot too
-
-gpupdate /force
-Restart-Computer -Force
-
-
-
-
-#############################
-# FINALIZE DC CONFIGURATION #
-#############################
 
 # WinLogBeat config file handling
 
